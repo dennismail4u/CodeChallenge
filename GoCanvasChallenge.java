@@ -2,6 +2,7 @@ package TestGoCanvas;
 
 import java.util.concurrent.TimeUnit;
 
+import org.junit.Assert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
@@ -17,7 +18,9 @@ public class GoCanvasChallenge {
 	private static WebDriverWait wait = null;
 	private static String driverPathChrome = "/Users/DennisThomas/Documents/workspace/Drivers/chromedriver";
 	private static String url = "https://www.gocanvas.com/";
-
+	private static String userName = "qa+628@gocanvas.com";
+	private static String password = "canvas";
+	
 	public static void main(String[] args) {
 		initialize();
 		login();
@@ -35,6 +38,8 @@ public class GoCanvasChallenge {
 		options.addArguments("start-maximized");
 		driver = new ChromeDriver(options);
 		wait = new WebDriverWait(driver, 20);
+		
+		System.out.println("Driver got initialized successfully.");
 	}
 
 	public static void login() {
@@ -43,15 +48,25 @@ public class GoCanvasChallenge {
 		driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
 
 		clickByLinkText(driver, "Log In");
-		enterTextById(driver, "login", "qa+628@gocanvas.com");
-		enterTextById(driver, "password", "canvas");
+		enterTextById(driver, "login", userName);
+		enterTextById(driver, "password", password);
 		clickByXpath(driver, "//button[@id='btn_Log In' and @value='Log In']");
+		
+		Assert.assertTrue("Login failed!! Please check the Login", 
+				driver.findElements(By.linkText("Create App")).size() != 0);
+		
+		System.out.println("Logged In successfully.");
 	}
 
 	public static void createApp() {
 		clickByLinkText(driver, "Create App");
 		clickByXpath(driver, "//img[contains(@src,'/images/template_options/T---Blank.png')]");
 		clickById(driver, "start-tamplate");
+		
+		Assert.assertTrue("Something Went Wrong while creating app. Couldnt reach the form screen. Please check !!", 
+				driver.findElements(By.id("formName")).size() != 0);
+		
+		System.out.println("Selected the blank form successfully.");
 	}
 	
 	public static void fillFormPage() {
@@ -61,24 +76,30 @@ public class GoCanvasChallenge {
 		clickByXpath(driver,
 				"//li[contains(@title,'A Short Text field allows the user to enter short text as a response to a prompt.')]");
 		enterTextByXpath(driver, "//textarea[contains(@placeholder,'New Short Text')]", "that was easy!");
+		
+		System.out.println("Entered the required details on the form successfully.");
 	}
 	
 	public static void saveAndPublish() {
 		clickByXpath(driver, "//a[contains(@title,'Save')]");
+		System.out.println("Saved the form successfully.");
+		
 		clickByJavaScript(driver, "//a[@title='Publish to device']");
 
-		//Note: Below are for cancelling from 'Next' screen and retry. Couldn't locate the the buttons Next & Publish at the first try but keep spinning - Worked when I tried cancel and tapped
-		//again. Not sure what was the issue.
+		//Note: Below are for canceling from 'Next' screen and retry. While clicking on Next button, it was not landing on Publish screen
+		//but keep spinning - Worked when I tried cancel and tapped again. Not sure what was the issue.
 		clickByXpath(driver, "//button[@class='btn cvs-def-btn']");
-//		wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//button[@class='btn cvs-prim-btn']")));
-//		driver.findElement(By.xpath("//button[@class='btn cvs-def-btn']")).click();
-
 		clickByJavaScript(driver, "//a[@title='Publish to device']");
 		clickByJavaScript(driver, "//button[@class='btn ng-binding cvs-prim-btn']");
 		
 		clickBycssSelector(driver, "[ng-class='\\{disabled\\: validations\\.email \\=\\= false\\}']");
 
+		Assert.assertTrue("Something Went Wrong while tapping on the Next button while publishing the form. Please check !!", 
+				driver.findElements(By.xpath("//body/div[@role='dialog']//publish/section[@class='ng-scope']//button[@class='btn cvs-prim-btn']")).size() != 0);
+		
 		clickByXpath(driver, "//body/div[@role='dialog']//publish/section[@class='ng-scope']//button[@class='btn cvs-prim-btn']");
+		
+		System.out.println("Published the form successfully.");
 	}
 	
 	public static void quiteBrowser(){
