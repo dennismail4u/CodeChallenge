@@ -88,15 +88,20 @@ public class GoCanvasChallenge {
 
 		//Note: Below are for canceling from 'Next' screen and retry. While clicking on Next button, it was not landing on Publish screen
 		//but keep spinning - Worked when I tried cancel and tapped again. Not sure what was the issue.
+		//click Cancel
 		clickByXpath(driver, "//button[@class='btn cvs-def-btn']");
+		//Click Publish to device on top right
 		clickByJavaScript(driver, "//a[@title='Publish to device']");
+		//Click Publish pop up
 		clickByJavaScript(driver, "//button[@class='btn ng-binding cvs-prim-btn']");
-		
+		//Click Next button on pop up
 		clickBycssSelector(driver, "[ng-class='\\{disabled\\: validations\\.email \\=\\= false\\}']");
+		//Click select all users on pop up
+		clickByXpath(driver, "//label[@class='icheckbox']");
 
 		Assert.assertTrue("Something Went Wrong while tapping on the Next button while publishing the form. Please check !!", 
 				driver.findElements(By.xpath("//body/div[@role='dialog']//publish/section[@class='ng-scope']//button[@class='btn cvs-prim-btn']")).size() != 0);
-		
+		//Click Publish button on pop up
 		clickByXpath(driver, "//body/div[@role='dialog']//publish/section[@class='ng-scope']//button[@class='btn cvs-prim-btn']");
 		
 		System.out.println("Published the form successfully.");
@@ -107,7 +112,8 @@ public class GoCanvasChallenge {
 	}
 	
 	
-	//Help Methods
+	//*********************************** Help Methods *********************************************************
+
 	public static void clickById(WebDriver driver, String id) {
 		wait.until(ExpectedConditions.visibilityOfElementLocated(By.id(id)));
 		WebElement ele = driver.findElement(By.id(id));
